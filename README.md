@@ -83,11 +83,13 @@ The chat summary names the mode that ran.
 
 ## Install options
 
-The two commands in Quick start cover most setups. prism also ships its own installer:
+The two commands in Quick start cover most setups. prism also ships its own installer, published on npm as [`@cmjr765/prism`](https://www.npmjs.com/package/@cmjr765/prism):
 
 ```
-npx shubhamkaushal765/prism install
+npx @cmjr765/prism install
 ```
+
+To install straight from GitHub instead, use `npx shubhamkaushal765/prism install`.
 
 Commands:
 
