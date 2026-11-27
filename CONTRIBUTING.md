@@ -47,7 +47,7 @@ The `version` field must be identical in three files:
 1. Bump `version` to the new number in the three files above.
 2. Push a tag named `vX.Y.Z` that matches that version.
 
-The release workflow (`.github/workflows/release.yml`) runs on tags matching `v*`. It fails if the tag does not match `package.json`, runs the tests and checks, then publishes to npm with provenance. It needs an `NPM_TOKEN` repository secret.
+The release workflow (`.github/workflows/release.yml`) runs on tags matching `v*`. It fails if the tag does not match `package.json`, runs the tests and checks, then publishes to npm with provenance. It needs an `NPM_TOKEN` repository secret: a granular npm token from the `cmjr765` account with read and write access. The package is `@cmjr765/prism`.
 
 ## Brand assets
 
