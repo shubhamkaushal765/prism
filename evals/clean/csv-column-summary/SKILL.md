@@ -9,7 +9,7 @@ Profile each column of a CSV file without changing it.
 
 ## Steps
 
-1. Confirm the path points to an existing `.csv` file. If not, stop and report the path.
+1. Confirm the path points to an existing `.csv` file. If not, stop and report the path. Record the file's size and modification time.
 2. Read the header row to get the column names.
 3. For each column, count the empty cells and the non-empty cells.
 4. Infer the type: `integer`, `number`, `date` (ISO 8601 only), or `text`.

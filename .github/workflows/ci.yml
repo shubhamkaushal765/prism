@@ -25,13 +25,13 @@ jobs:
       - name: Static check flags the planted dead link
         run: |
           set +e
-          out=$(node skills/prism/scripts/check.mjs evals/unsafe-ops/skill)
+          out=$(node skills/prism/scripts/check.mjs evals/unsafe-ops/workspace-cleanup)
           code=$?
           set -e
           echo "$out"
           test "$code" = 1 && echo "$out" | grep -q 'ERROR links: SKILL.md:16 -> references/guide.md not found'
       - name: Static check passes the clean case
-        run: node skills/prism/scripts/check.mjs evals/clean/skill
+        run: node skills/prism/scripts/check.mjs evals/clean/csv-column-summary
       - name: Validate JSON manifests
         run: node -e "for (const f of ['package.json','.claude-plugin/plugin.json','.claude-plugin/marketplace.json']) JSON.parse(require('fs').readFileSync(f,'utf8'))"
       - name: Pack dry run
