@@ -6,7 +6,8 @@ import process from 'node:process';
 
 const KNOWN_KEYS = new Set(['name', 'description', 'license', 'compatibility', 'metadata', 'allowed-tools']);
 const NAME_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const LINK_PATTERN = /\[[^\]]*\]\(([^)\s]+)\)/g;
+// Matches [text](target), [text](<target>) and an optional "title" after the target.
+const LINK_PATTERN = /\[[^\]]*\]\(\s*(?:<([^>]+)>|([^)\s]+))(?:\s+(?:"[^"]*"|'[^']*'))?\s*\)/g;
 
 /** Findings in the order they were found, printed at the end. */
 const findings = [];
@@ -40,11 +41,19 @@ function listFiles(dir, rel = '') {
   return files;
 }
 
-/** Strips one matching pair of surrounding quotes. */
+/** Reads a text file with any BOM removed and line endings normalized to \n. */
+function readText(file) {
+  return fs.readFileSync(file, 'utf8').replace(/^﻿/, '').replace(/\r\n?/g, '\n');
+}
+
+/**
+ * Strips one matching pair of surrounding quotes. A bare value loses any trailing YAML comment.
+ */
 function unquote(value) {
   const quote = value[0];
   const quoted = value.length >= 2 && (quote === '"' || quote === "'") && value.endsWith(quote);
-  return quoted ? value.slice(1, -1) : value;
+  if (quoted) return value.slice(1, -1);
+  return value.replace(/(^|\s)#.*$/, '').trim();
 }
 
 /**
@@ -162,15 +171,27 @@ function relativeTarget(raw) {
 
 /**
  * Checks that every relative markdown link in every .md file resolves to an existing file.
+ * Lines inside fenced code blocks are skipped.
  * @param {string} dir skill directory
  * @param {string[]} files posix paths relative to dir
  */
 function checkLinks(dir, files) {
   for (const rel of files.filter((file) => file.endsWith('.md'))) {
-    const lines = fs.readFileSync(path.join(dir, rel), 'utf8').split('\n');
+    const lines = readText(path.join(dir, rel)).split('\n');
+    let fence = null;
     lines.forEach((line, index) => {
+      const marker = /^\s*(`{3}|~{3})/.exec(line)?.[1];
+      if (marker !== undefined) {
+        if (fence === null) {
+          fence = marker;
+        } else if (fence === marker) {
+          fence = null;
+        }
+        return;
+      }
+      if (fence !== null) return;
       for (const match of line.matchAll(LINK_PATTERN)) {
-        const target = relativeTarget(match[1]);
+        const target = relativeTarget(match[1] ?? match[2]);
         if (target === null) continue;
         if (!fs.existsSync(path.resolve(dir, path.dirname(rel), target))) {
           add('ERROR', 'links', `${rel}:${index + 1} -> ${target} not found`);
@@ -236,7 +257,7 @@ function main(argv) {
   if (!fs.existsSync(skillMd)) {
     add('ERROR', 'frontmatter', 'SKILL.md not found');
   } else {
-    const text = fs.readFileSync(skillMd, 'utf8');
+    const text = readText(skillMd);
     checkFrontmatter(text, path.basename(dir));
     const lines = checkSize(text);
     const otherFiles = files.filter((file) => file !== 'SKILL.md');
@@ -249,4 +270,9 @@ function main(argv) {
   return report();
 }
 
-process.exitCode = main(process.argv.slice(2));
+try {
+  process.exitCode = main(process.argv.slice(2));
+} catch (error) {
+  console.error(`check failed: ${error.message}`);
+  process.exitCode = 2;
+}

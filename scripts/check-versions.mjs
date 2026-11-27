@@ -31,7 +31,7 @@ function marketplaceVersion(marketplace) {
 
 /**
  * Compares the three manifest versions under root.
- * @param {string} root
+ * @param {string[]} argv arguments after the script name; the first one, if given, is the root
  * @returns {number} 0 when all agree, 1 on mismatch
  */
 function main(argv) {
@@ -42,7 +42,7 @@ function main(argv) {
     'marketplace.json': marketplaceVersion(readJson(path.join(root, '.claude-plugin', 'marketplace.json'))),
   };
   const values = Object.values(versions);
-  if (values.every((version) => version === values[0])) {
+  if (values.every((version) => typeof version === 'string' && version === values[0])) {
     console.log(`versions in sync: ${values[0]}`);
     return 0;
   }

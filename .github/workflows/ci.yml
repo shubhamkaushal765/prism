@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,7 +23,13 @@ jobs:
       - name: Check
         run: npm run check
       - name: Static check flags the planted dead link
-        run: if node skills/prism/scripts/check.mjs evals/unsafe-ops/skill; then echo "expected failure" && exit 1; fi
+        run: |
+          set +e
+          out=$(node skills/prism/scripts/check.mjs evals/unsafe-ops/skill)
+          code=$?
+          set -e
+          echo "$out"
+          test "$code" = 1 && echo "$out" | grep -q 'ERROR links: SKILL.md:16 -> references/guide.md not found'
       - name: Static check passes the clean case
         run: node skills/prism/scripts/check.mjs evals/clean/skill
       - name: Validate JSON manifests

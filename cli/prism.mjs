@@ -50,7 +50,7 @@ function parseArgs(argv) {
     } else if (arg === '--agent') {
       const id = argv[++i];
       if (id === undefined || id.startsWith('-')) throw new Error('--agent needs an agent id');
-      if (!(id in AGENTS)) {
+      if (!Object.hasOwn(AGENTS, id)) {
         throw new Error(`unknown agent: ${id} (known: ${Object.keys(AGENTS).join(', ')})`);
       }
       parsed.agents.push(id);
@@ -97,11 +97,22 @@ function planTargets(agentIds, scope) {
   return targets;
 }
 
-/** Replaces the target with a fresh copy of the skill. */
+/**
+ * Replaces the target with a fresh copy of the skill. The copy is built beside the target first,
+ * so a failed copy leaves the existing install in place.
+ */
 function install(target) {
-  fs.rmSync(target, { recursive: true, force: true });
+  const staging = `${target}.tmp-${process.pid}`;
+  fs.rmSync(staging, { recursive: true, force: true });
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.cpSync(SOURCE, target, { recursive: true, force: true });
+  try {
+    fs.cpSync(SOURCE, staging, { recursive: true, force: true });
+  } catch (error) {
+    fs.rmSync(staging, { recursive: true, force: true });
+    throw error;
+  }
+  fs.rmSync(target, { recursive: true, force: true });
+  fs.renameSync(staging, target);
   console.log(`installed prism -> ${target}`);
 }
 
@@ -152,16 +163,26 @@ function main(argv) {
     return 1;
   }
 
-  const agentIds = selectAgents(parsed.agents);
-  const targets = planTargets(agentIds, parsed.scope ?? 'project');
-  for (const [target, ids] of targets) {
-    if (parsed.command === 'install' || parsed.command === 'update') {
-      install(target);
-    } else if (parsed.command === 'uninstall') {
-      uninstall(target);
-    } else {
-      console.log(`${ids.join(',')}: ${target} ${doctorStatus(target)}`);
+  if (!fs.existsSync(path.join(SOURCE, 'SKILL.md'))) {
+    console.error(`packaged skill not found: ${SOURCE}`);
+    return 1;
+  }
+
+  try {
+    const agentIds = selectAgents(parsed.agents);
+    const targets = planTargets(agentIds, parsed.scope ?? 'project');
+    for (const [target, ids] of targets) {
+      if (parsed.command === 'install' || parsed.command === 'update') {
+        install(target);
+      } else if (parsed.command === 'uninstall') {
+        uninstall(target);
+      } else {
+        console.log(`${ids.join(',')}: ${target} ${doctorStatus(target)}`);
+      }
     }
+  } catch (error) {
+    console.error(`prism: ${parsed.command} failed: ${error.message}`);
+    return 1;
   }
   return 0;
 }
