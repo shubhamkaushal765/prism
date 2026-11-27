@@ -16,7 +16,6 @@ npm run check    # structural check of skills/prism, then the version sync check
 - `skills/prism/`: the skill. `SKILL.md`, `references/` (selection, judge and report rules, one persona file per auditor), and `scripts/check.mjs`.
 - `cli/prism.mjs`: the installer behind `npx shubhamkaushal765/prism`.
 - `evals/`: calibration set of skills with planted flaws, plus one clean control.
-- `docs/brand.md`: the brand guide.
 - `assets/`: logo, wordmark and Facet SVGs.
 - `test/`: node:test suites.
 - `scripts/check-versions.mjs`: version sync check.
@@ -52,4 +51,4 @@ The release workflow (`.github/workflows/release.yml`) runs on tags matching `v*
 
 ## Brand assets
 
-The colors, logo use and Facet guidelines are in [docs/brand.md](docs/brand.md). Use the files in `assets/` rather than redrawing them.
+The logo, wordmark and Facet SVGs live in `assets/`. Use those files rather than redrawing them.
