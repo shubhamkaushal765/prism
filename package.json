@@ -1,5 +1,5 @@
 {
-  "name": "@shubhamkaushal765/prism",
+  "name": "@cmjr765/prism",
   "version": "0.1.0",
   "description": "prism: an agent skill that audits other skills. Profiles the skill, picks 4-8 auditors for depth and breadth, verifies the findings, and returns a report with fixes.",
   "type": "module",
