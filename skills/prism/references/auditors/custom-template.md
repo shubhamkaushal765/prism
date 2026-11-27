@@ -1,6 +1,6 @@
 # Custom Auditor Template
 
-Use this template to define a skill-specific auditor (spec section 6). Write the finished auditor in the same section layout as the default persona files: Lens, Axis, Dimension, Probing questions, Evidence that counts, Out of scope, Severity guide, Output.
+Use this template to define a skill-specific auditor. Write the finished auditor in the same section layout as the default persona files: Lens, Axis, Dimension, Probing questions, Evidence that counts, Out of scope, Severity guide, Output.
 
 ## When to create one
 - Create one only when the target is high-risk or in a specialized domain that none of the 6 default auditors covers (e.g. clinical, legal, financial, security-critical operations).

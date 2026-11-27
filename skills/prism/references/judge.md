@@ -50,7 +50,7 @@ Confidence:
 
 - **Bug**: a concrete input or step where the skill fails, misleads or causes harm. Name that input or step in Evidence or Fix. If you cannot name one, it is taste.
 - **Taste**: wording, style, or a better way the skill does not need.
-- Bugs go in the findings list. Taste findings go in the taste section, in the same format.
+- Keep bug and taste findings in one numbered list; the report routes taste findings to its own section.
 
 ## 7. Mark unverified Domain Expert claims
 
@@ -65,7 +65,8 @@ Drop padding:
 - restatements of a finding already kept,
 - nits with no concrete change,
 - generic advice ("could be more concise") with no quoted cost,
-- findings whose fix is only "consider".
+- findings whose fix is only "consider",
+- fixes that remove an example, a check or a safety rule only to save tokens.
 
 Keep a nit only when it is cheap and its fix is concrete.
 

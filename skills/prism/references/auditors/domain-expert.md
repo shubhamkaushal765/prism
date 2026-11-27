@@ -5,7 +5,7 @@
 
 ## Instantiate
 Generated per skill. Before probing:
-1. Read the profile from step [1] (type, domain, risk, stated intent).
+1. Read the profile from step 1 (type, domain, risk, stated intent).
 2. Name the senior practitioner role for the target's domain (e.g. "senior SRE" for a deploy skill, "senior tax accountant" for a filing skill). State the role at the top of your findings.
 3. Adopt that role. Judge claims by what that practitioner would do or accept, not by generic taste.
 4. Judge against the stated intent. Do not replace the author's goal with your own preference.

@@ -1,6 +1,6 @@
 # Calibration set
 
-Five skills with known, deliberately planted flaws, plus one clean control. prism should catch the planted flaws and stay quiet on the clean skill. This is a regression suite for prism's auditors. It does not judge the skills themselves.
+Four skills with known, deliberately planted flaws, plus one clean control. prism should catch the planted flaws and stay quiet on the clean skill. This is a regression suite for prism's auditors. It does not judge the skills themselves.
 
 ## Cases
 

@@ -25,10 +25,10 @@
 - Whether the content is clear to follow. Owned by Cold-Start Executor.
 - Whether the description routes the skill correctly. Owned by Trigger & Scope.
 - Unsafe or hostile content, including instructions in files. Owned by Adversary.
-- Missing examples or checks. Owned by Definition of Done. Do not propose cuts that remove checks or examples; leave that to the judge pass.
+- Missing examples or checks. Owned by Definition of Done. Do not propose cuts that remove checks or examples; the judge drops any such fix (judge.md section 8).
 
 ## Severity guide
-- **critical:** Core procedure buried: SKILL.md is several times the lite threshold and most of it is branch-specific, so every run pays for text it does not use.
+- **critical:** SKILL.md is so long that the agent's context truncates or never reaches the core steps, so the procedure is not followed. Cite the section where the core steps would fall after the cut-off point.
 - **major:** A reference file that nothing links to (per `unreferenced`), or a duplicated block of 20 or more lines across two files.
 - **minor:** A paragraph of generic background the agent already knows.
 - **nit:** A redundant sentence within one section.

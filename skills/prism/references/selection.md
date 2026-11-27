@@ -27,13 +27,13 @@ Risk levels:
 
 ## 2. Selection algorithm
 
-1. Always include Cold-Start Executor and Domain Expert. They are the base of every roster (D6).
+1. Always include Cold-Start Executor and Domain Expert. They are the base of every roster.
 2. For each signal in the profile, find its auditor in section 3. Add the auditor once, even if several signals point to it. Record the signal as the reason.
 3. For each risk flag, add the auditor mapped to it (once per auditor).
 4. Check the axis mix. The roster needs at least one vertical auditor (Domain Expert, Adversary, or a vertical custom auditor) and at least one horizontal auditor (Trigger & Scope, Cold-Start Executor, Context Economist, Definition of Done). The always-on pair normally covers both. If not, add the closest missing one.
 5. If the roster has fewer than 4 auditors, add default auditors in this order until it has 4: Trigger & Scope, Context Economist, Definition of Done, Adversary. Reason: "general coverage, minimum 4".
 6. Going beyond 4 is allowed only when the profile names a signal for each extra auditor. Write that signal in the reason.
-7. Add a custom auditor only when all three hold: (a) risk is high, (b) the domain has checkable rules that the Domain Expert cannot cover from general knowledge (for example this year's tax thresholds or a dosing table), and (c) no default auditor covers those rules. Build it from [auditors/custom-template.md](auditors/custom-template.md). It counts toward the cap. Write its persona file to the scratchpad directory, never into the target.
+7. Add a custom auditor only when all three hold: (a) risk is high, (b) the domain has checkable rules that the Domain Expert cannot cover from general knowledge (for example this year's tax thresholds or a dosing table), and (c) no default auditor covers those rules. Build it from [auditors/custom-template.md](auditors/custom-template.md). It counts toward the cap. Write its persona file to a scratch directory outside the target, never into the target.
 8. Cap at 8. If the signals need more slots, keep the ones tied to the highest risk. Record the rest as skipped with "cap reached".
 9. If unsure, pick from the six default auditors only. Do not create a custom one.
 10. Record every obvious candidate that was not picked, with its reason. Examples: "no signal: no external reads", "overlaps with Cold-Start Executor", "cap reached", "single 40-line file, no bundle".
@@ -107,4 +107,4 @@ The out-of-scope list keeps lenses disjoint. Give the custom auditor a dimension
 - Skipped:
   - Trigger & Scope: the description is specific ("draft a US return from uploaded W-2 PDFs"). No signal.
   - Definition of Done: the skill has a reconciliation checklist.
-- Result: 5 auditors. The fifth slot is justified by two named signals: the bundle (Context Economist) and the custom rule (Tax Rules Checker). The custom auditor owns numeric rules, and the Domain Expert keeps everything else.
+- Result: 5 auditors. The fifth slot is the custom auditor, justified by rule 7 (high risk, checkable year-specific rules, no default covers them). Context Economist is the fourth pick, justified by the bundle signal. The custom auditor owns numeric rules, and the Domain Expert keeps everything else.
