@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Test
+        run: npm test
+      - name: Check
+        run: npm run check
+      - name: Static check flags the planted dead link
+        run: if node skills/prism/scripts/check.mjs evals/unsafe-ops/skill; then echo "expected failure" && exit 1; fi
+      - name: Static check passes the clean case
+        run: node skills/prism/scripts/check.mjs evals/clean/skill
+      - name: Validate JSON manifests
+        run: node -e "for (const f of ['package.json','.claude-plugin/plugin.json','.claude-plugin/marketplace.json']) JSON.parse(require('fs').readFileSync(f,'utf8'))"
+      - name: Pack dry run
+        run: npm pack --dry-run
