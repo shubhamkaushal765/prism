@@ -31,7 +31,7 @@ Each case lives at `evals/<case>/<skill-name>/`, with an answer key at `evals/<c
 2. Ask: `audit the skill at evals/<case>/<skill-name>`, or run `/prism evals/<case>/<skill-name>`.
 3. Compare the resulting `prism-report.md` with `evals/<case>/expected.md`. Each planted flaw should be caught by the expected auditor at or above the stated severity. The clean case should produce no major or critical findings.
 
-Scoring rules are in [evals/README.md](evals/README.md). CI runs only the static check on each case, not agent runs.
+Scoring rules are in [evals/README.md](evals/README.md). CI runs only the static check, on `unsafe-ops` (must flag the dead link) and `clean` (must pass), not agent runs.
 
 ## Version sync
 
