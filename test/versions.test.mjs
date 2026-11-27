@@ -22,7 +22,7 @@ function writeManifests({ pkg, plugin, market }) {
   fs.mkdirSync(path.join(root, '.claude-plugin'));
   fs.writeFileSync(
     path.join(root, 'package.json'),
-    JSON.stringify({ name: '@shubhamkaushal765/prism', version: pkg }, null, 2),
+    JSON.stringify({ name: '@cmjr765/prism', version: pkg }, null, 2),
   );
   fs.writeFileSync(
     path.join(root, '.claude-plugin', 'plugin.json'),
