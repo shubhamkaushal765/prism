@@ -31,7 +31,7 @@ Risk levels:
 2. For each signal in the profile, find its auditor in section 3. Add the auditor once, even if several signals point to it. Record the signal as the reason.
 3. For each risk flag, add the auditor mapped to it (once per auditor).
 4. Check the axis mix. The roster needs at least one vertical auditor (Domain Expert, Adversary, or a vertical custom auditor) and at least one horizontal auditor (Trigger & Scope, Cold-Start Executor, Context Economist, Definition of Done). The always-on pair normally covers both. If not, add the closest missing one.
-5. If the roster has fewer than 4 auditors, add default auditors in this order until it has 4: Trigger & Scope, Context Economist, Definition of Done, Adversary. Reason: "general coverage, minimum 4".
+5. Every auditor already in the roster counts toward the 4, including ones added by signals or risk flags. If the roster still has fewer than 4, add default auditors in this order until it has 4: Trigger & Scope, Context Economist, Definition of Done, Adversary. Reason: "general coverage, minimum 4".
 6. Going beyond 4 is allowed only when the profile names a signal for each extra auditor. Write that signal in the reason.
 7. Add a custom auditor only when all three hold: (a) risk is high, (b) the domain has checkable rules that the Domain Expert cannot cover from general knowledge (for example this year's tax thresholds or a dosing table), and (c) no default auditor covers those rules. Build it from [auditors/custom-template.md](auditors/custom-template.md). It counts toward the cap. Write its persona file to a scratch directory outside the target, never into the target.
 8. Cap at 8. If the signals need more slots, keep the ones tied to the highest risk. Record the rest as skipped with "cap reached".
@@ -50,7 +50,7 @@ Risk flags are the rows marked "risk flag". Each flag adds its auditor once.
 | Runs shell commands, or depends on tools that may be missing | Adversary | vertical | yes |
 | Specialized high-risk domain (finance, legal, medical, tax, compliance) | Domain Expert (always on), plus a custom auditor per rule 7 | vertical | yes |
 | Bundle with scripts, references or assets, or SKILL.md over ~200 lines | Context Economist | horizontal | no |
-| Generative or creative output, or no examples, checks or self-verification step | Definition of Done | horizontal | no |
+| Any one of: generative or creative output; no example output; no self-check or verification step | Definition of Done | horizontal | no |
 | Vague or broad description, or no trigger phrases and no "when not to use" | Trigger & Scope | horizontal | no |
 | Time-sensitive claims (versions, APIs, prices, regulations) | Domain Expert (always on) verifies with web search | vertical | no |
 
