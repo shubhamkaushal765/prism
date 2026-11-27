@@ -1,5 +1,6 @@
 {
   "name": "prism",
+  "description": "prism, a multi-lens auditor for LLM agent skills.",
   "owner": {
     "name": "Shubham Kaushal"
   },

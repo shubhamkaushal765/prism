@@ -31,7 +31,7 @@ Output: verified findings in the LOCKED format, a count of dropped findings by r
 
 A conflict is two auditors that disagree about the same text (one says cut, one says expand; one says the instruction is clear, one says it is ambiguous). Apply these rules in order:
 
-1. **Stated intent arbitrates.** If the skill's stated intent favors one side, keep that side and say so in the finding.
+1. **Stated intent arbitrates.** If the skill's stated intent favors one side, keep that side and say so in the finding. Exception: a security-relevant fact is a bug, never taste, even when the skill states it as its environment. Stated intent never makes an unsafe default acceptable (section 5).
 2. **A bug outranks taste.** A bug finding on the same text beats a taste finding. The taste finding moves to the taste section or is dropped.
 3. **Correctness outranks token savings.** If cutting the text would break correctness or stop the executor from following the steps, keep the text.
 4. **Unresolved.** Keep one finding titled "Conflict: <short topic>". Put both options in Fix as "Option A: ... Option B: ...". Do not choose. Set Confidence: low. Kind is taste unless one side is a bug.
@@ -39,6 +39,11 @@ A conflict is two auditors that disagree about the same text (one says cut, one 
 ## 5. Recalibrate severity and confidence
 
 Severity uses the meanings in [report.md](report.md). An auditor's severity is a claim. Set it to what the verified evidence supports: lower it when the failure needs an unlikely input, raise it when a common input hits the problem.
+
+Override rules:
+
+- A failure that needs an input the skill never mentions and its stated intent does not imply (for example exotic encodings, huge files, unusual formats) is minor at most.
+- A security-relevant fact (end-of-life runtime that receives no security fixes, weak or broken crypto, exposed secrets, unsafe defaults) is a bug, never taste, even when the skill states it as its environment. Stated intent never makes an unsafe default acceptable.
 
 Confidence:
 
@@ -70,6 +75,8 @@ Drop padding:
 
 Keep a nit only when it is cheap and its fix is concrete.
 
+Keep at most 3 minor or nit findings per auditor, highest impact first; count the rest as padding.
+
 If nothing remains, the report says "no significant issues found", and every dimension verdict is pass.
 
 ## 9. Lite mode self-check
@@ -82,17 +89,18 @@ Lite mode has no separate judge. After playing the lenses:
 
 ## 10. Dimension verdicts
 
-Dimension names are in [report.md](report.md). For each dimension that ran:
+Dimension names are in [report.md](report.md). Apply these rules to each dimension:
 
-- **fail**: at least one verified critical or major bug with high or medium confidence.
-- **concern**: any other verified minor or major finding.
-- **pass**: no verified findings, or nits only.
+- **fail**: at least one verified critical bug, or a verified major bug with high confidence.
+- **concern**: any other verified bug of severity minor or above (including major with medium or low confidence).
+- **pass**: no verified bugs, or only nits and taste.
+- **not run**: the dimension's auditor was not picked.
 
-There are no numeric scores.
+No numeric scores.
 
 ## 11. Output
 
 1. Verified findings in the LOCKED format, numbered F1..Fn. Sort by severity (critical first), then confidence (high first), then bug before taste. Keep taste findings in this list so the report can route them to the taste section.
 2. Dropped counts by reason: hallucinated quote, quote does not support the claim, duplicate merged, padding, no concrete fix.
-3. Dimension verdict table: Dimension | Verdict | Finding IDs.
+3. Dimension verdict table: Dimension | Verdict | Findings.
 4. Unverified claims (title and source status).

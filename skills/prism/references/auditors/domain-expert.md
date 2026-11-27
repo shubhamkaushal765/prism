@@ -46,6 +46,7 @@ Proof types:
 - **major:** An outdated API or version that makes the core step fail (e.g. the main command uses a flag removed in the current release, verified with a cited source).
 - **minor:** A best-practice gap that still works (e.g. a deprecated but functional option).
 - **nit:** An imprecise term a practitioner would correct, with no consequence for the result.
+- **Security floor:** An end-of-life runtime on a security-relevant path (it receives no security fixes), weak or broken crypto, or an unsafe default is rated at least major and is a bug, even when the skill states it as its environment. Stated intent does not lower it.
 
 ## Output
 Report findings in the finding format defined in [report.md](../report.md). Zero findings is a valid result: write "No significant issues" and stop.

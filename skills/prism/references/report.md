@@ -69,9 +69,15 @@ Write this file in the current working directory. Fill every section. If a secti
 
 | Dimension | Verdict | Findings |
 |---|---|---|
-| Cold-Start Executability | pass | none |
+| Trigger & Scope | <pass, concern, fail or not run> | <IDs or none> |
+| Cold-Start Executability | <pass, concern, fail or not run> | <IDs or none> |
+| Domain Correctness | <pass, concern, fail or not run> | <IDs or none> |
+| Robustness & Safety | <pass, concern, fail or not run> | <IDs or none> |
+| Context Efficiency | <pass, concern, fail or not run> | <IDs or none> |
+| Definition of Done | <pass, concern, fail or not run> | <IDs or none> |
+| <custom dimension, if a custom auditor was picked> | <pass, concern, fail or not run> | <IDs or none> |
 
-Verdicts are pass, concern or fail. There are no scores.
+Verdicts are pass, concern, fail or not run (auditor not picked). List every default dimension. There are no scores.
 
 ## Top 3 fixes
 
@@ -118,7 +124,7 @@ Reply with this, at most about 12 lines. Use the same verdict wording as the rep
 
 ```
 prism: <skill name>, <mode> mode
-Verdicts: Trigger & Scope <v> | Cold-Start Executability <v> | Domain Correctness <v> | ...
+Verdicts: <dimension> <v> | <dimension> <v> | ... (dimensions that ran only)
 Top 3 fixes:
 1. F<n>: <title>
 2. F<n>: <title>
@@ -129,6 +135,7 @@ Fixes are patches in the report and are not applied. Ask to apply them.
 
 Rules:
 
+- The Verdicts line lists only dimensions that ran. Omit "not run" dimensions.
 - If there are no significant issues, replace the Top 3 block with "No significant issues found."
 - In degraded or lite mode, add: "Auditors shared one context, so independence is weaker."
 - In diff mode, replace the Top 3 block with the counts of fixed, regressed and new findings.

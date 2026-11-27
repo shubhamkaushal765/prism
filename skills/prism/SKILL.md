@@ -21,24 +21,27 @@ Audit one skill. Profile it, pick 4-8 independent auditors, verify their finding
 
 ### 0. Detect capability and mode
 
-1. Check whether you can start isolated subagents and run code.
-   - Both available: mode is **full** (empirical runs still need a sandbox, see step 3).
-   - Otherwise: mode is **degraded**.
-2. Check lite. If the target SKILL.md is under ~100 lines AND the target directory holds no other files, mode is **lite**, whatever the capability.
-3. Lite rules: at least 4 lenses, played sequentially in one context (as in degraded), no empirical runs, and the judge folded into a self-check (judge step 9).
-4. Write the mode in the report header. In degraded and lite mode, tell the user in the chat summary that auditors shared one context, so independence is weaker.
+Check in this order. The first match sets the mode.
+
+1. **Lite**: the target SKILL.md is under ~100 lines AND the target directory holds no other files (empty directories do not count). Lite wins over everything else.
+2. **Full**: you have a tool that starts a subagent with its own context (for example an Agent or Task tool in your tool list) AND a tool that runs shell commands. Empirical runs still need a sandbox (see step 3).
+3. **Degraded**: anything else.
+
+Lite rules: at least 4 lenses, played sequentially in one context (as in degraded), no empirical runs, and the judge folded into a self-check (judge step 9).
+
+Write the mode in the report header. In degraded and lite mode, tell the user in the chat summary that auditors shared one context, so independence is weaker.
 
 ### 1. Profile the target
 
 1. Read the whole target SKILL.md. Read the other files it references in full if they are under ~300 lines; grep longer ones. List every other file in the target directory by name.
 2. Run the structural checker from this skill's directory: `node scripts/check.mjs <target-skill-dir>`. If Node is not available, skip it and write "check.mjs: skipped, Node unavailable" in the report.
-3. Keep its ERROR and WARN lines. Pass them to the auditors as evidence to verify, not as established fact.
+3. Keep its ERROR and WARN lines. Pass them to the auditors as evidence to verify, not as established fact. A `name ... does not match directory` WARN is at most a nit, and is ignored when the target directory is a temporary copy.
 4. Fill the profile block in [references/selection.md](references/selection.md): type, depth, domain, risk, assumptions, stated intent, risk flags.
 
 ### 2. Select the roster
 
 1. Follow [references/selection.md](references/selection.md). It sets the minimum (4), the maximum (8), the always-on auditors and the signal-to-auditor table.
-2. Record every picked auditor with its reason, and every obvious candidate that was skipped with its reason. Both go in the report.
+2. Fix the roster before reading any persona file. Record every picked auditor with its reason, and every obvious candidate that was skipped with its reason. Both go in the report. Read persona files only for picked auditors.
 3. If unsure, pick from the six default auditors. Create a custom auditor only when the custom rule in selection.md applies.
 
 ### 3. Empirical runs (full mode only)
@@ -66,9 +69,10 @@ Full mode:
 
 Degraded or lite mode:
 
-1. Play each auditor in turn. Before each one, state its lens in one line and read its persona file.
+1. Play only the picked roster, one auditor at a time. Before each one, state its lens in one line and read its persona file. Never read or play a skipped auditor's persona file.
 2. Write that auditor's findings to a file in a scratch directory outside the target before starting the next auditor.
 3. Do not reuse wording from earlier auditors. Do not revise an earlier auditor's findings while playing a later one.
+4. The Domain Expert still web-verifies time-sensitive claims when a web tool is available.
 
 Subagent brief template (copy it, fill the brackets, use absolute paths):
 
@@ -91,6 +95,7 @@ Rules:
 - Report each finding in the LOCKED format in [absolute path to references/report.md]. Each needs a quote that exists verbatim on the cited line.
 - Mark Kind as bug or taste. Do not mix them.
 - Zero findings is a valid result. Do not invent findings.
+- Domain Expert only: first name the senior practitioner role for this domain (persona file, Instantiate), and web-verify time-sensitive claims when a web tool is available.
 - Return: the findings, your dimension verdict (pass, concern or fail), and what you did not cover.
 ```
 
