@@ -1,0 +1,42 @@
+{
+  "name": "@shubhamkaushal765/prism",
+  "version": "0.1.0",
+  "description": "prism: an agent skill that audits other skills. Profiles the skill, picks 4-8 auditors for depth and breadth, verifies the findings, and returns a report with fixes.",
+  "type": "module",
+  "bin": {
+    "prism": "cli/prism.mjs"
+  },
+  "files": [
+    "cli/",
+    "skills/",
+    ".claude-plugin/"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "check": "node skills/prism/scripts/check.mjs skills/prism && node scripts/check-versions.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "author": "Shubham Kaushal",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shubhamkaushal765/prism.git"
+  },
+  "homepage": "https://github.com/shubhamkaushal765/prism",
+  "keywords": [
+    "agent-skills",
+    "claude-code",
+    "claude-plugin",
+    "llm",
+    "prompt-engineering",
+    "code-review",
+    "ai-agents",
+    "skill-audit"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
