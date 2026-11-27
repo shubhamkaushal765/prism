@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Test
+        run: npm test
+      - name: Check
+        run: npm run check
+      - name: Static check flags the planted dead link
+        run: |
+          set +e
+          out=$(node skills/prism/scripts/check.mjs evals/unsafe-ops/skill)
+          code=$?
+          set -e
+          echo "$out"
+          test "$code" = 1 && echo "$out" | grep -q 'ERROR links: SKILL.md:16 -> references/guide.md not found'
+      - name: Static check passes the clean case
+        run: node skills/prism/scripts/check.mjs evals/clean/skill
+      - name: Validate JSON manifests
+        run: node -e "for (const f of ['package.json','.claude-plugin/plugin.json','.claude-plugin/marketplace.json']) JSON.parse(require('fs').readFileSync(f,'utf8'))"
+      - name: Pack dry run
+        run: npm pack --dry-run
