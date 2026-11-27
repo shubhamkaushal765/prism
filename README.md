@@ -2,96 +2,110 @@
 
 <p align="center"><em>Every skill, seen from every side.</em></p>
 
-prism: an agent skill that audits other skills. Profiles the skill, picks 4–8 auditors for depth and breadth, verifies the findings, and returns a report with fixes.
+prism is an agent skill that reviews your other agent skills before your users run into their problems. It checks whether a skill will trigger at the right time, whether an agent can follow it, whether its facts hold up, and whether it is safe to run.
 
-## How it works
+You get a short verdict in chat and a full report with ready-to-apply fixes.
 
-prism runs a fixed pipeline:
+## Quick start
 
-0. Mode selection, in this order: lite if the skill is a single SKILL.md under about 100 lines with no other files (one read-through); otherwise full if the agent has a subagent tool and a shell; otherwise degraded (single read-through, no empirical runs).
-1. Profiling: type, depth, domain, risk, assumptions, and stated intent.
-2. Auditor selection: 4 to 8 auditors, with a reason for each pick and each skip.
-3. Empirical runs (full mode, optional): 3 to 5 generated test prompts, transcripts captured.
-4. Independent audits: each auditor works in isolation and cites evidence for every finding.
-5. Judge pass: verifies findings, merges duplicates, resolves conflicts, separates bugs from taste.
-6. Report and fixes: a verdict per dimension, top 3 fixes, full findings, and patches.
-
-The six default auditors:
-
-| Auditor | Axis | Core question |
-|---|---|---|
-| Trigger & Scope | Horizontal | Does it fire when it should, and stay quiet when it should not? |
-| Cold-Start Executor | Horizontal, always on | Could an agent with no context follow it step by step? |
-| Domain Expert | Vertical, always on | Is the content correct and current, and what would a senior practitioner wince at? |
-| Adversary | Vertical | What breaks on odd inputs, partial failures, or unsafe actions? |
-| Context Economist | Horizontal | Is it token-efficient, free of duplication, and free of dead files? |
-| Definition of Done | Horizontal | Does it say what good output looks like and how to verify it? |
-
-The two always-on auditors are Cold-Start Executor and Domain Expert. prism picks 4 to 8 auditors in total, with at least one vertical and one horizontal.
-
-Verdicts, one per dimension:
-
-- **pass**: no verified bugs, or only nits and taste.
-- **concern**: any other verified bug of severity minor or above, including a major bug with medium or low confidence.
-- **fail**: a verified critical bug, or a verified major bug with high confidence.
-- **not run**: the dimension's auditor was not picked for this skill.
-
-## Meet Facet
-
-<p align="center"><img src="assets/facet.svg" alt="Facet, the prism mascot" height="120"></p>
-
-Facet is a gem with a face and a jeweler's loupe: an inspector who looks closely. It reads every line twice, quotes what it finds, and is happiest when it finds nothing wrong. See [docs/brand.md](docs/brand.md) for the brand guide.
-
-## Install
-
-Claude Code, as a plugin:
+In Claude Code, install prism as a plugin:
 
 ```
 /plugin marketplace add shubhamkaushal765/prism
 /plugin install prism@prism
 ```
 
-Any supported agent, with the skills CLI:
+In any other agent that supports skills:
 
 ```
 npx skills add shubhamkaushal765/prism
 ```
 
-Installer built into prism:
+Then ask your agent to audit a skill:
 
 ```
-npx shubhamkaushal765/prism install [--global] [--agent <id>]
+audit the skill at ./skills/my-skill
 ```
 
-Global npm package:
+In Claude Code you can also type the command directly (`/prism:prism` when installed as a plugin, `/prism` when installed with `npx skills`):
 
 ```
-npm i -g @shubhamkaushal765/prism
-prism install
+/prism:prism ./skills/my-skill
 ```
 
-## CLI reference
+## What you get back
+
+A typical run ends with a summary like this:
 
 ```
-prism <command> [--global | --project] [--agent <id>]...
+prism: workspace-cleanup
+Verdicts: Cold-Start Executability fail | Robustness & Safety fail | Domain Correctness pass | Context Efficiency pass
+Top 3 fixes:
+1. F1: Skill tells the agent to follow instructions from a remote README
+2. F2: Script writes SYNC_API_TOKEN into cleanup.log
+3. F3: Step 5 links to a guide that does not exist
+Full report: ./prism-report.md
+Fixes are patches in the report and are not applied. Ask to apply them.
+```
+
+- Every finding quotes the exact line it is about, so you can jump straight to it.
+- Real bugs are kept separate from style opinions.
+- Fixes come as patches in the report. Nothing in your skill changes unless you ask.
+- "No significant issues" is a real answer. prism does not invent problems to look busy.
+
+The verdicts mean:
+
+- **pass**: no real problems found in this area.
+- **concern**: a real problem, but the skill still works.
+- **fail**: a problem that will likely break the skill or cause harm.
+- **not run**: this area was not checked for this skill.
+
+## What it checks
+
+| Reviewer | The question it asks |
+|---|---|
+| Trigger & Scope | Will it activate when it should, and stay quiet when it should not? |
+| Cold-Start Executor | Could an agent with no context follow it step by step? |
+| Domain Expert | Is it correct and current? Facts that can go stale are checked against sources. |
+| Adversary | What happens with odd input, missing tools, injected instructions, or destructive commands? |
+| Context Economist | Is it lean, or does it waste the agent's context? |
+| Definition of Done | Does it say what good output looks like, and how to check it? |
+
+prism picks 4 to 8 of these based on what your skill does, and tells you why it picked or skipped each one. For a high-risk domain, it can add a specialist reviewer built for that field.
+
+## How thorough is it?
+
+- A small skill (one short SKILL.md with no other files) gets a quick single read-through.
+- If your agent can run subagents, each reviewer works on its own, so no reviewer is swayed by another's findings. Otherwise the reviewers share one context, and the summary says so.
+- When a sandbox is available, prism can try your skill on test prompts. It asks before running anything destructive.
+
+The chat summary names the mode that ran.
+
+## Install options
+
+The two commands in Quick start cover most setups. prism also ships its own installer:
+
+```
+npx shubhamkaushal765/prism install
 ```
 
 Commands:
 
-| Command | What it does |
-|---|---|
-| `install` | Copies the prism skill into each agent's skills directory. |
-| `uninstall` | Removes prism from each agent's skills directory. |
-| `update` | Same as `install`; replaces the installed copy. |
-| `doctor` | Prints one line per target: `up to date`, `outdated`, or `not installed`. |
+- `install`: copy prism into each agent's skills folder.
+- `uninstall`: remove prism from those folders.
+- `update`: replace the installed copy with this version.
+- `doctor`: report for each target whether prism is `up to date`, `outdated`, or `not installed`.
 
 Flags:
 
-- `--project` (default): install under the current directory.
-- `--global`: install under your home directory. Cannot be combined with `--project`.
-- `--agent <id>`: target one agent. Repeat the flag for more agents.
+- `--project` (default): install into the current project.
+- `--global`: install into your home directory, for all projects. Cannot be combined with `--project`.
+- `--agent <id>`: target one agent: `claude-code`, `codex`, `cursor`, or `opencode`. Repeat the flag for more than one.
 
-Agent ids and their directories (relative to the project or home base):
+Without `--agent`, prism looks for agents under your home directory and installs into each one it finds. If it finds none, it uses `claude-code`.
+
+<details>
+<summary>Where files go</summary>
 
 | Agent id | Project directory | Global directory |
 |---|---|---|
@@ -100,35 +114,19 @@ Agent ids and their directories (relative to the project or home base):
 | `cursor` | `.agents/skills` | `.cursor/skills` |
 | `opencode` | `.agents/skills` | `.config/opencode/skills` |
 
-Without `--agent`, prism detects agents by their marker directories under your home directory (`~/.claude`, `~/.codex`, `~/.cursor`, `~/.config/opencode`). If none is found, it uses `claude-code`.
+Project directories are relative to the current project. Global directories are relative to your home directory.
 
-## Usage
+</details>
 
-Ask the agent to audit a skill:
+## Meet Facet
 
-```
-/prism path/to/skill
-audit the skill at ./skills/invoice-helper
-```
+<p align="center"><img src="assets/facet.svg" alt="Facet, the prism mascot" height="120"></p>
 
-prism writes two outputs:
+Facet is a gem with a face and a jeweler's loupe: an inspector who looks closely. It reads every line twice, quotes what it finds, and is happiest when it finds nothing wrong.
 
-- A summary in the chat.
-- The full report in `prism-report.md`.
+## Contributing
 
-Fixes are patches. prism does not apply them unless you ask.
-
-## Development
-
-```
-npm test          # node --test
-npm run check     # static check of the prism skill, then version sync
-```
-
-- `evals/` holds a calibration set of skills with planted flaws. See [evals/README.md](evals/README.md).
-- Eval skills live at `evals/<case>/<skill-name>/`, for example `evals/clean/csv-column-summary`. To run one, ask an agent to "audit the skill at evals/<case>/<skill-name>", then compare the resulting `prism-report.md` with `evals/<case>/expected.md`, where the case has one.
-- Version sync: `version` in `package.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` must match. `npm run check` enforces this.
-- Release: bump the three versions, then push a tag `vX.Y.Z`. The release workflow checks the tag against `package.json`, then publishes to npm with provenance.
+Maintainers: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
